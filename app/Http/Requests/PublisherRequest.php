@@ -22,7 +22,7 @@ class PublisherRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'pname' => 'required|string|max:255',
+            'pname' => 'required|string|max:255',
             'city' => 'required|string|max:100',
         ];
     }

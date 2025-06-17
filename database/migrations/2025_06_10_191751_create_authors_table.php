@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('authors', function (Blueprint $table) {
             $table->id();
-              $table->string('fname');
-    $table->string('lname');
-    $table->string('country');
-    $table->string('city');
-    $table->string('address');
+            $table->string('fname');
+            $table->string('lname');
+            $table->string('country');
+            $table->string('city');
+            $table->string('address');
             $table->timestamps();
         });
     }

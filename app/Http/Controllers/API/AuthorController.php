@@ -49,13 +49,13 @@ class AuthorController extends Controller
         : response()->json($authors);
     }
 
-    // 📚 عرض كتب مؤلف معيّن
+    //  عرض كتب مؤلف معيّن
     public function books($id)
     {
         $author = Author::with('books.publisher')->findOrFail($id);
 
         return response()->json([
-            'author' => $author->fname . ' ' . $author->lname,
+            'author' => $author,
             'books' => $author->books
         ]);
     }

@@ -22,14 +22,13 @@ class BookRequest extends FormRequest
     public function rules(): array
     {
         return [
-              'title' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'type' => 'required|string|max:100',
             'price' => 'required|numeric|min:0',
             'author_id' => 'required|exists:authors,id',
             'pubId' => 'required|exists:publishers,id',
-             'description' => 'nullable|string',
+            'description' => 'nullable|string',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }
-
