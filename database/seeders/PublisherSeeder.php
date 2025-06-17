@@ -14,21 +14,43 @@ class PublisherSeeder extends Seeder
      */
     public function run(): void
     {
-         $publishers = [
-            ['pname' => 'Knowledge House', 'city' => 'Damascus'],
-            ['pname' => 'Arabic Readers', 'city' => 'Cairo'],
-            ['pname' => 'Future Books', 'city' => 'Amman'],
-            ['pname' => 'Wisdom Press', 'city' => 'Beirut'],
-            ['pname' => 'Digital Library Co.', 'city' => 'Tunis'],
-            ['pname' => 'Horizon Publishing', 'city' => 'Aleppo'],
-            ['pname' => 'Elite Books', 'city' => 'Rabat'],
-            ['pname' => 'Nile Publications', 'city' => 'Khartoum'],
-            ['pname' => 'Open Knowledge', 'city' => 'Baghdad'],
-            ['pname' => 'Syrian Book Center', 'city' => 'Latakia'],
+          $arabicCities = [
+            'Damascus', 'Cairo', 'Amman', 'Beirut', 'Tunis',
+            'Aleppo', 'Rabat', 'Khartoum', 'Baghdad', 'Latakia',
+            'Alexandria', 'Dubai', 'Riyadh', 'Muscat', 'Doha'
         ];
 
-        foreach ($publishers as $pub) {
-            Publisher::create($pub);
+        $publisherTypes = [
+            'House', 'Press', 'Publications', 'Publishing', 'Books',
+            'Library', 'Center', 'Media', 'Print', 'Editions'
+        ];
+
+        $publisherPrefixes = [
+            'Knowledge', 'Arabic', 'Future', 'Wisdom', 'Digital',
+            'Horizon', 'Elite', 'Nile', 'Open', 'Golden',
+            'Modern', 'United', 'Global', 'Creative', 'Advanced'
+        ];
+
+        for ($i = 0; $i < 15; $i++) {
+            $publisherName = $this->generatePublisherName($publisherPrefixes, $publisherTypes);
+
+            Publisher::create([
+                'pname' => $publisherName,
+                'city' => fake()->randomElement($arabicCities),
+            ]);
         }
+    }
+
+    protected function generatePublisherName(array $prefixes, array $types): string
+    {
+        $name = fake()->randomElement($prefixes) . ' ' . fake()->randomElement($types);
+
+        // 30% chance to add a suffix
+        if (fake()->boolean(30)) {
+            $suffixes = ['Co.', 'Ltd.', 'Inc.', 'Group', 'International'];
+            $name .= ' ' . fake()->randomElement($suffixes);
+        }
+
+        return $name;
     }
 }

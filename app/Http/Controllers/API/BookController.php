@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class BookController extends Controller
 {
@@ -16,7 +18,17 @@ class BookController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $book = Book::create($request->validated());
+
+       $data = $request->validated();
+              /**
+ * @var \Illuminate\Http\Request|\App\Http\Requests\CarRequest $request
+ */
+        // معالجة رفع الصورة
+        if ($request->hasFile('cover_image')) {
+            $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+        }
+
+        $book = Book::create($data);
 
         return response()->json([
             'message' => 'Book created successfully',
@@ -27,7 +39,9 @@ class BookController extends Controller
     // 📚 عرض كل الكتب
     public function index()
     {
-        return Book::with(['author', 'publisher'])->get();
+        // return Book::with(['author', 'publisher'])->paginate(10);
+         $books = Book::with(['author', 'publisher'])->paginate(10);
+    return response()->json($books);
     }
 
     // 🔍 عرض تفاصيل كتاب محدد
@@ -58,9 +72,23 @@ class BookController extends Controller
         }
 
         $book = Book::findOrFail($id);
-        $book->update($request->validated());
+         $data = $request->validated();
+              /**
+ * @var \Illuminate\Http\Request|\App\Http\Requests\CarRequest $request
+ */
+        // معالجة رفع الصورة الجديدة
+        if ($request->hasFile('cover_image')) {
+            // حذف الصورة القديمة إذا كانت موجودة
+            if ($book->cover_image) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+        }
+
+        $book->update($data);
 
         return response()->json(['message' => 'Book updated successfully', 'book' => $book]);
+
     }
 
     // حذف كتاب
@@ -69,8 +97,14 @@ class BookController extends Controller
         if (!auth()->user()->is_admin) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
+$book = Book::findOrFail($id);
 
-        Book::findOrFail($id)->delete();
+        // حذف الصورة المرتبطة إذا كانت موجودة
+        if ($book->cover_image) {
+            Storage::disk('public')->delete($book->cover_image);
+        }
+
+        $book->delete();
 
         return response()->json(['message' => 'Book deleted successfully']);
     }

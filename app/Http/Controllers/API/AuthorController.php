@@ -34,12 +34,19 @@ class AuthorController extends Controller
     // 🔍 بحث جزئي باسم المؤلف
     public function search(Request $request)
     {
-        $query = $request->input('q');
-        $authors = Author::where('fname', 'like', "%$query%")
-            ->orWhere('lname', 'like', "%$query%")
-            ->get();
+       $query = $request->input('q');
 
-        return response()->json($authors);
+    if(empty($query)) {
+        return response()->json([]);
+    }
+
+    $authors = Author::where('fname', 'like', "%$query%")
+        ->orWhere('lname', 'like', "%$query%")
+        ->get();
+
+    return $authors->isEmpty()
+        ? response()->json([], 200)
+        : response()->json($authors);
     }
 
     // 📚 عرض كتب مؤلف معيّن
@@ -81,4 +88,18 @@ class AuthorController extends Controller
             'message' => 'Author deleted successfully'
         ]);
     }
+
+    public function show($id)
+{
+    $author = Author::findOrFail($id);
+
+    return response()->json([
+        'author' => $author
+    ]);
 }
+}
+
+
+//    return Author::where('fname', 'like', '%'.$request->q.'%')
+//            ->orWhere('lname', 'like', '%'.$request->q.'%')
+//            ->get();

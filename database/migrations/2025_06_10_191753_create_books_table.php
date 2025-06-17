@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('title');
             $table->string('type');
             $table->decimal('price', 8, 2);
+              $table->text('description')->nullable(); // إضافة وصف الكتاب
+        $table->string('cover_image')->nullable();
             $table->foreignId('author_id')->constrained('authors')->onDelete('cascade');
             $table->foreignId('pubId')->constrained('publishers')->onDelete('cascade');
             $table->timestamps();

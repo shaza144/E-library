@@ -44,7 +44,7 @@ class PublisherController extends Controller
         $publisher = Publisher::with('books.author')->findOrFail($id);
 
         return response()->json([
-            'publisher' => $publisher->pname,
+            'publisher' =>  $publisher,
             'books' => $publisher->books
         ]);
     }

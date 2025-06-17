@@ -32,6 +32,7 @@ Route::get('/authors/{id}/books', [AuthorController::class, 'books']);
 Route::get('/publishers', [PublisherController::class, 'index']);
 Route::get('/publishers/search', [PublisherController::class, 'search']);
 Route::get('/publishers/{id}/books', [PublisherController::class, 'books']);
+Route::get('/authors/{id}', [AuthorController::class, 'show']);
 
 Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/search', [BookController::class, 'search']);
@@ -39,3 +40,12 @@ Route::get('/books/{id}', [BookController::class, 'show']);
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+
+
+
+
+
+
+
+

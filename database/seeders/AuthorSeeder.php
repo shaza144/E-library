@@ -13,21 +13,50 @@ class AuthorSeeder extends Seeder
      */
     public function run(): void
     {
-          $authors = [
-            ['fname' => 'John', 'lname' => 'Doe', 'country' => 'Syria', 'city' => 'Damascus', 'address' => 'Al-Mazzeh Street'],
-            ['fname' => 'Mary', 'lname' => 'Smith', 'country' => 'Lebanon', 'city' => 'Beirut', 'address' => 'Hamra St.'],
-            ['fname' => 'Omar', 'lname' => 'Khateeb', 'country' => 'Syria', 'city' => 'Homs', 'address' => 'Al-Kossour'],
-            ['fname' => 'Mona', 'lname' => 'Hatem', 'country' => 'Egypt', 'city' => 'Cairo', 'address' => 'Ramsis'],
-            ['fname' => 'Samir', 'lname' => 'Salem', 'country' => 'Jordan', 'city' => 'Amman', 'address' => 'University Street'],
-            ['fname' => 'Lina', 'lname' => 'Hassan', 'country' => 'Syria', 'city' => 'Aleppo', 'address' => 'Shahba'],
-            ['fname' => 'Huda', 'lname' => 'Youssef', 'country' => 'Iraq', 'city' => 'Baghdad', 'address' => 'Al-Karada'],
-            ['fname' => 'Rami', 'lname' => 'Jamil', 'country' => 'Syria', 'city' => 'Tartous', 'address' => 'Corniche St.'],
-            ['fname' => 'Dana', 'lname' => 'Fadel', 'country' => 'Tunisia', 'city' => 'Tunis', 'address' => 'Habib Bourguiba Ave.'],
-            ['fname' => 'Ziad', 'lname' => 'Amine', 'country' => 'Morocco', 'city' => 'Rabat', 'address' => 'Hassan II Blvd.'],
-        ];
 
-        foreach ($authors as $author) {
-            Author::create($author);
+        $countries = ['Syria', 'Lebanon', 'Egypt', 'Jordan', 'Iraq', 'Tunisia', 'Morocco', 'Algeria', 'Saudi Arabia', 'UAE'];
+        $syrianCities = ['Damascus', 'Aleppo', 'Homs', 'Latakia', 'Tartous', 'Hama', 'Daraa'];
+        $lebanonCities = ['Beirut', 'Tripoli', 'Sidon', 'Tyre', 'Byblos'];
+        $egyptCities = ['Cairo', 'Alexandria', 'Giza', 'Luxor', 'Aswan'];
+        $jordanCities = ['Amman', 'Zarqa', 'Irbid', 'Aqaba'];
+        $iraqCities = ['Baghdad', 'Basra', 'Mosul', 'Erbil'];
+        $tunisiaCities = ['Tunis', 'Sfax', 'Sousse', 'Kairouan'];
+        $moroccoCities = ['Rabat', 'Casablanca', 'Marrakesh', 'Fes'];
+
+        for ($i = 0; $i < 30; $i++) {
+            $country = fake()->randomElement($countries);
+
+            Author::create([
+                'fname' => fake()->firstName(),
+                'lname' => fake()->lastName(),
+                'country' => $country,
+                'city' => $this->getCityByCountry($country, $syrianCities, $lebanonCities, $egyptCities, $jordanCities, $iraqCities, $tunisiaCities, $moroccoCities),
+                'address' => $this->generateAddress(),
+            ]);
         }
+    }
+
+    protected function getCityByCountry($country, $syrianCities, $lebanonCities, $egyptCities, $jordanCities, $iraqCities, $tunisiaCities, $moroccoCities)
+    {
+        return match($country) {
+            'Syria' => fake()->randomElement($syrianCities),
+            'Lebanon' => fake()->randomElement($lebanonCities),
+            'Egypt' => fake()->randomElement($egyptCities),
+            'Jordan' => fake()->randomElement($jordanCities),
+            'Iraq' => fake()->randomElement($iraqCities),
+            'Tunisia' => fake()->randomElement($tunisiaCities),
+            'Morocco' => fake()->randomElement($moroccoCities),
+            default => fake()->city(),
+        };
+    }
+
+    protected function generateAddress(): string
+    {
+        $streetTypes = ['St.', 'Street', 'Ave.', 'Avenue', 'Blvd.', 'Road', 'Square'];
+        $prefixes = ['Al-', 'Ibn ', 'Prince ', 'King ', 'Sheikh '];
+
+        return fake()->randomElement($prefixes) .
+               fake()->word() . ' ' .
+               fake()->randomElement($streetTypes);
     }
 }
