@@ -98,8 +98,3 @@ class AuthorController extends Controller
     ]);
 }
 }
-
-
-//    return Author::where('fname', 'like', '%'.$request->q.'%')
-//            ->orWhere('lname', 'like', '%'.$request->q.'%')
-//            ->get();

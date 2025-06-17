@@ -36,7 +36,7 @@ class BookController extends Controller
         ], 201);
     }
 
-    // 📚 عرض كل الكتب
+    //  عرض كل الكتب
     public function index()
     {
         // return Book::with(['author', 'publisher'])->paginate(10);
@@ -44,7 +44,7 @@ class BookController extends Controller
     return response()->json($books);
     }
 
-    // 🔍 عرض تفاصيل كتاب محدد
+    //  عرض تفاصيل كتاب محدد
     public function show($id)
     {
         $book = Book::with(['author', 'publisher'])->findOrFail($id);
@@ -64,7 +64,7 @@ class BookController extends Controller
         return response()->json($books);
     }
 
-    // ✏️ تعديل كتاب
+    //  تعديل كتاب
     public function update(BookRequest $request, $id)
     {
         if (!auth()->user()->is_admin) {
