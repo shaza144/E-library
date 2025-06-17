@@ -25,7 +25,9 @@ class BookController extends Controller
  */
         // معالجة رفع الصورة
         if ($request->hasFile('cover_image')) {
-            $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+            $data['cover_image'] = asset('storage/' . $request->file('cover_image')->store('book_covers', 'public'));
+
+            // $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
         }
 
         $book = Book::create($data);
