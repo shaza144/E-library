@@ -32,11 +32,14 @@ class BookController extends Controller
 if ($request->hasFile('cover_image')) {
     $image = $request->file('cover_image');
     $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-    $image->move(public_path('book_covers'), $filename);
 
-    // حفظ الرابط الكامل
-    $data['cover_image'] = url('book_covers/' . $filename);
+    // يخزن في storage/app/public/book_covers
+    $path = $image->storeAs('public/book_covers', $filename);
+
+    // نرجع فقط اسم الملف أو المسار النسبي
+    $data['cover_image'] = 'storage/book_covers/' . $filename;
 }
+
 
         $book = Book::create($data);
 
