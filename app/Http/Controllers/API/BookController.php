@@ -89,14 +89,27 @@ if ($request->hasFile('cover_image')) {
  * @var \Illuminate\Http\Request|\App\Http\Requests\CarRequest $request
  */
         // معالجة رفع الصورة الجديدة
-        if ($request->hasFile('cover_image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
-            if ($book->cover_image) {
-                Storage::disk('public')->delete($book->cover_image);
-            }
-            $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+        // if ($request->hasFile('cover_image')) {
+        //     // حذف الصورة القديمة إذا كانت موجودة
+        //     if ($book->cover_image) {
+        //         Storage::disk('public')->delete($book->cover_image);
+        //     }
+        //     $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+        // }
+    if ($request->hasFile('cover_image')) {
+        // حذف الصورة القديمة إذا كانت موجودة
+        if ($book->cover_image) {
+            // احذف من المسار داخل public فقط
+            $oldPath = str_replace('storage/', '', $book->cover_image);
+            Storage::disk('public')->delete($oldPath);
         }
 
+        $image = $request->file('cover_image');
+        $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+        $path = $image->storeAs('public/book_covers', $filename);
+
+        $data['cover_image'] = 'storage/book_covers/' . $filename;
+    }
         $book->update($data);
 
         return response()->json(['message' => 'Book updated successfully', 'book' => $book]);
