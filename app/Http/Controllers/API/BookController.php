@@ -24,11 +24,19 @@ class BookController extends Controller
  * @var \Illuminate\Http\Request|\App\Http\Requests\CarRequest $request
  */
         // معالجة رفع الصورة
-        if ($request->hasFile('cover_image')) {
-            $data['cover_image'] = asset('storage/' . $request->file('cover_image')->store('book_covers', 'public'));
+        // if ($request->hasFile('cover_image')) {
+        //     $data['cover_image'] = asset('storage/' . $request->file('cover_image')->store('book_covers', 'public'));
 
-            // $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
-        }
+        //     // $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
+        // }
+if ($request->hasFile('cover_image')) {
+    $image = $request->file('cover_image');
+    $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+    $image->move(public_path('book_covers'), $filename);
+
+    // حفظ الرابط الكامل
+    $data['cover_image'] = url('book_covers/' . $filename);
+}
 
         $book = Book::create($data);
 
