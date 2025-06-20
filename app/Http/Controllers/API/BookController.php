@@ -7,6 +7,8 @@ use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+
 
 
 class BookController extends Controller
@@ -29,15 +31,19 @@ class BookController extends Controller
 
         //     // $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
         // }
-if ($request->hasFile('cover_image')) {
-    $image = $request->file('cover_image');
-    $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+// if ($request->hasFile('cover_image')) {
+//     $image = $request->file('cover_image');
+//     $filename = uniqid() . '.' . $image->getClientOriginalExtension();
 
-    // يخزن في storage/app/public/book_covers
-    $path = $image->storeAs('public/book_covers', $filename);
+//     // يخزن في storage/app/public/book_covers
+//     $path = $image->storeAs('public/book_covers', $filename);
 
-    $data['cover_image'] = 'storage/book_covers/' . $filename;
-}
+//     $data['cover_image'] = 'storage/book_covers/' . $filename;
+// }
+ if ($request->hasFile('cover_image')) {
+        $uploadedFileUrl = Cloudinary::upload($request->file('cover_image')->getRealPath())->getSecurePath();
+        $data['cover_image'] = $uploadedFileUrl; // رابط مباشر للصورة
+    }
 
 
         $book = Book::create($data);
@@ -82,36 +88,32 @@ if ($request->hasFile('cover_image')) {
         if (!auth()->user()->is_admin) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-
         $book = Book::findOrFail($id);
          $data = $request->validated();
               /**
  * @var \Illuminate\Http\Request|\App\Http\Requests\CarRequest $request
  */
         // معالجة رفع الصورة الجديدة
-        // if ($request->hasFile('cover_image')) {
-        //     // حذف الصورة القديمة إذا كانت موجودة
-        //     if ($book->cover_image) {
-        //         Storage::disk('public')->delete($book->cover_image);
-        //     }
-        //     $data['cover_image'] = $request->file('cover_image')->store('book_covers', 'public');
-        // }
-    if ($request->hasFile('cover_image')) {
-        // حذف الصورة القديمة إذا كانت موجودة
-        if ($book->cover_image) {
-            // احذف من المسار داخل public فقط
-            $oldPath = str_replace('storage/', '', $book->cover_image);
-            Storage::disk('public')->delete($oldPath);
-        }
+    // if ($request->hasFile('cover_image')) {
+    //     // حذف الصورة القديمة إذا كانت موجودة
+    //     if ($book->cover_image) {
+    //         // احذف من المسار داخل public فقط
+    //         $oldPath = str_replace('storage/', '', $book->cover_image);
+    //         Storage::disk('public')->delete($oldPath);
+    //     }
+    //     $image = $request->file('cover_image');
+    //     $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+    //     $path = $image->storeAs('public/book_covers', $filename);
+    //     $data['cover_image'] = 'storage/book_covers/' . $filename;
+    // }
 
-        $image = $request->file('cover_image');
-        $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-        $path = $image->storeAs('public/book_covers', $filename);
+     if ($request->hasFile('cover_image')) {
+        // لا حاجة لحذف من التخزين المحلي بعد الآن، فقط نحذف القديم من Cloudinary إن أردت (اختياري)
 
-        $data['cover_image'] = 'storage/book_covers/' . $filename;
+        $uploadedFileUrl = Cloudinary::upload($request->file('cover_image')->getRealPath())->getSecurePath();
+        $data['cover_image'] = $uploadedFileUrl;
     }
         $book->update($data);
-
         return response()->json(['message' => 'Book updated successfully', 'book' => $book]);
 
     }
@@ -122,15 +124,12 @@ if ($request->hasFile('cover_image')) {
         if (!auth()->user()->is_admin) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-$book = Book::findOrFail($id);
-
+        $book = Book::findOrFail($id);
         // حذف الصورة المرتبطة إذا كانت موجودة
         if ($book->cover_image) {
             Storage::disk('public')->delete($book->cover_image);
         }
-
         $book->delete();
-
         return response()->json(['message' => 'Book deleted successfully']);
     }
 }

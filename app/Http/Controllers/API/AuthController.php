@@ -31,11 +31,11 @@ class AuthController extends Controller
         ]);
     }
 
-     public function login(LoginRequest $request)
+    public function login(LoginRequest $request)
     {
         $user = User::where('username', $request->login)
-                    ->orWhere('email', $request->login)
-                    ->first();
+            ->orWhere('email', $request->login)
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
