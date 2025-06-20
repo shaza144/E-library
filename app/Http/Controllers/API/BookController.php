@@ -41,9 +41,12 @@ class BookController extends Controller
 //     $data['cover_image'] = 'storage/book_covers/' . $filename;
 // }
  if ($request->hasFile('cover_image')) {
-        $uploadedFileUrl = Cloudinary::upload($request->file('cover_image')->getRealPath())->getSecurePath();
-        $data['cover_image'] = $uploadedFileUrl; // رابط مباشر للصورة
-    }
+    $uploaded = Cloudinary::uploadApi()->upload(
+        $request->file('cover_image')->getRealPath(),
+        ['folder' => 'book_covers']
+    );
+    $data['cover_image'] = $uploaded['secure_url'];
+}
 
 
         $book = Book::create($data);
@@ -107,12 +110,14 @@ class BookController extends Controller
     //     $data['cover_image'] = 'storage/book_covers/' . $filename;
     // }
 
-     if ($request->hasFile('cover_image')) {
-        // لا حاجة لحذف من التخزين المحلي بعد الآن، فقط نحذف القديم من Cloudinary إن أردت (اختياري)
+  if ($request->hasFile('cover_image')) {
+    $uploaded = Cloudinary::uploadApi()->upload(
+        $request->file('cover_image')->getRealPath(),
+        ['folder' => 'book_covers']
+    );
+    $data['cover_image'] = $uploaded['secure_url'];
+}
 
-        $uploadedFileUrl = Cloudinary::upload($request->file('cover_image')->getRealPath())->getSecurePath();
-        $data['cover_image'] = $uploadedFileUrl;
-    }
         $book->update($data);
         return response()->json(['message' => 'Book updated successfully', 'book' => $book]);
 
